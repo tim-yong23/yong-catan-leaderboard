@@ -258,12 +258,24 @@ const CONFIG = {
   SHEET_ID: "1ill11deMa9w1VmY9iRIsuWTCdwTI9GF-0QxSTaqC-Ts",
   TITLE: "Official Catan Leaderboard",
   // Optional fallback: File → Share → Publish to web → CSV links for each tab.
-  PUBLISHED_CSV: { Results: "", Games: "" },
+  PUBLISHED_CSV: { Results: "", Games: "", Players: "" },
   REFRESH_SECONDS: 60,
 };
 
-/* Catan's own player colours, handed out in the order people first played. */
-const PIECES = ["#c8342b", "#f1ede2", "#e27d22", "#3f7fe0", "#3f8b4e", "#8a5a34", "#9a5cc4", "#1fa39c"];
+/* Catan's own player colours. Set each person's colour in the "colour" column of the Players tab;
+   anyone without one gets the next unused colour, in the order people first played. */
+const NAMED = {
+  red: "#c8342b", white: "#f1ede2", orange: "#e27d22", blue: "#3f7fe0",
+  green: "#3f8b4e", brown: "#8a5a34", purple: "#9a5cc4", teal: "#1fa39c",
+};
+const PIECES = Object.values(NAMED);
+
+function toColour(v) {
+  const t = String(v || "").trim().toLowerCase();
+  if (NAMED[t]) return NAMED[t];
+  if (t === "grey" || t === "gray") return "#8d969b";
+  return /^#[0-9a-f]{6}$/.test(t) ? t : null;
+}
 
 const state = { filter: "all", games: [], scoring: {}, colours: {}, loadedAt: null, firstRender: true };
 const $ = (id) => document.getElementById(id);
@@ -351,13 +363,25 @@ async function load() {
   const btn = $("refresh");
   btn.setAttribute("aria-busy", "true");
   try {
-    const [results, games] = await Promise.all([fetchTab("Results"), fetchTab("Games").catch(() => [])]);
+    const [results, games, players] = await Promise.all([
+      fetchTab("Results"),
+      fetchTab("Games").catch(() => []),
+      fetchTab("Players").catch(() => []),
+    ]);
     state.games = groupGames(results);
     state.scoring = {};
     for (const g of games) if (g.name) state.scoring[norm(g.name)] = /^low/i.test(g.scoring || "") ? "low" : "high";
+    // Chosen colours first, then everyone else gets the next colour nobody has picked.
     state.colours = {};
+    const chosen = {};
+    for (const p of players) { const c = toColour(p.colour); if (p.name && c) chosen[norm(p.name)] = c; }
+    const taken = new Set(Object.values(chosen));
+    const spare = PIECES.filter((c) => !taken.has(c));
     let n = 0;
-    for (const g of state.games) for (const e of g.entries) if (!(e.player in state.colours)) state.colours[e.player] = PIECES[n++ % PIECES.length];
+    for (const g of state.games) for (const e of g.entries) {
+      if (e.player in state.colours) continue;
+      state.colours[e.player] = chosen[norm(e.player)] || spare[n++ % Math.max(spare.length, 1)] || PIECES[0];
+    }
     state.loadedAt = new Date();
     if (state.filter !== "all" && !state.games.some((g) => g.game === state.filter)) state.filter = "all";
     render();
