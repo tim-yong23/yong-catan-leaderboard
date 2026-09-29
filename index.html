@@ -355,6 +355,8 @@ function groupGames(results) {
       e.points = sum / tied[e.rank];
       e.tied = tied[e.rank] > 1;
     }
+    const lastRank = Math.max(...g.entries.map((e) => e.rank));
+    for (const e of g.entries) e.last = e.rank === lastRank && lastRank > 1;
   }
   return list;
 }
@@ -397,7 +399,7 @@ async function load() {
 
 function standings(games) {
   const S = new Map();
-  const get = (p) => S.get(p) || S.set(p, { player: p, played: 0, wins: 0, points: 0, history: [] }).get(p);
+  const get = (p) => S.get(p) || S.set(p, { player: p, played: 0, wins: 0, points: 0, history: [], lastPlaces: 0, comebacks: 0, wasLast: false }).get(p);
   for (const g of games) {
     for (const e of g.entries) {
       const s = get(e.player);
@@ -405,6 +407,9 @@ function standings(games) {
       s.points += e.points;
       if (e.rank === 1) s.wins++;
       s.history.push(e.rank === 1);
+      if (e.last) s.lastPlaces++;
+      if (e.rank === 1 && s.wasLast) s.comebacks++; // won straight after coming last
+      s.wasLast = e.last;
     }
   }
   return [...S.values()].map((s) => {
@@ -414,13 +419,16 @@ function standings(games) {
   }).sort((a, b) => b.points - a.points || b.wins - a.wins || a.played - b.played || a.player.localeCompare(b.player));
 }
 
-function topScore(games) {
-  let best = null;
+// Best single-game score; everyone who hit it shares the honour.
+function topScores(games) {
+  let best = [];
   for (const g of games) {
     const low = state.scoring[norm(g.game)] === "low";
     for (const e of g.entries) {
       if (e.score === null || Number.isNaN(e.score)) continue;
-      if (!best || (low ? e.score < best.score : e.score > best.score)) best = { ...e, game: g.game, at: g.at };
+      const cur = best[0];
+      if (!cur || (low ? e.score < cur.score : e.score > cur.score)) best = [{ ...e, game: g.game, at: g.at }];
+      else if (e.score === cur.score && !best.some((b) => b.player === e.player)) best.push({ ...e, game: g.game, at: g.at });
     }
   }
   return best;
@@ -539,14 +547,28 @@ function honoursHTML(table, games) {
     const who = table.filter((s) => s.wins === mostWins).map((s) => s.player);
     cards.push(card("Most wins", who, plural(mostWins, "win", "wins")));
   }
-  const top = topScore(games);
-  if (top) {
-    cards.push(card("Top score", [top.player], `Scored ${fmt(top.score)}${oneGameName() ? "" : ` at ${top.game}`} ${whenPhrase(top.at)}`));
+  const tops = topScores(games);
+  if (tops.length) {
+    const t = tops[0];
+    const detail = tops.length === 1
+      ? `Scored ${fmt(t.score)}${oneGameName() ? "" : ` at ${t.game}`} ${whenPhrase(t.at)}`
+      : `Both scored ${fmt(t.score)}`.replace("Both", tops.length === 2 ? "Both" : "Each");
+    cards.push(card("Top score", tops.map((x) => x.player), detail));
   }
   const streak = Math.max(...table.map((s) => s.bestStreak));
   if (streak >= 2) {
     const who = table.filter((s) => s.bestStreak === streak).map((s) => s.player);
     cards.push(card("Longest winning streak", who, `${streak} wins in a row`));
+  }
+  const comebacks = Math.max(...table.map((s) => s.comebacks));
+  if (comebacks > 0) {
+    const who = table.filter((s) => s.comebacks === comebacks).map((s) => s.player);
+    cards.push(card("Most comebacks", who, `${plural(comebacks, "win", "wins")} straight after coming last`));
+  }
+  const spoon = Math.max(...table.map((s) => s.lastPlaces));
+  if (spoon > 0) {
+    const who = table.filter((s) => s.lastPlaces === spoon).map((s) => s.player);
+    cards.push(card("Wooden spoon", who, `Came last ${spoon === 1 ? "once" : spoon === 2 ? "twice" : `${spoon} times`}`));
   }
   if (!cards.length) return "";
   return `<h2>Honours</h2><div class="honours">${cards.join("")}</div>`;
