@@ -3,635 +3,1473 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#174a60">
-<title>Official Catan Leaderboard</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,4 92,28 92,72 50,96 8,72 8,28' fill='%23e3b43f' stroke='%233b2a18' stroke-width='6'/></svg>">
+<meta name="theme-color" content="#0A0912">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kitchen">
+<meta name="robots" content="noindex">
+<title>Yong Kitchen</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9B%92%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@700;800&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --sea: #174a60;
-    --sea-deep: #0f3547;
-    --text: #eef4f2;
-    --muted: #a8c2cb;
-    --line: rgba(238, 244, 242, .13);
-    --parchment: #efe2bf;
-    --parchment-edge: #cdb98a;
-    --brown: #3b2a18;
-    --wheat: #e3b43f;
-    --lattice: rgba(238, 244, 242, .07);
-    --piece-edge: rgba(0, 0, 0, .35);
-    --serif: "Alegreya", Georgia, "Times New Roman", serif;
-    --sans: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+    --bg: #0A0912;
+    --surface: rgba(255, 255, 255, 0.055);
+    --surface-strong: rgba(255, 255, 255, 0.1);
+    --surface-press: rgba(255, 255, 255, 0.14);
+    --border: rgba(255, 255, 255, 0.11);
+    --border-strong: rgba(255, 255, 255, 0.2);
+    --text: #F5F3FF;
+    --muted: rgba(245, 243, 255, 0.62);
+    --faint: rgba(245, 243, 255, 0.38);
+    --hot: #FF4F8B;
+    --orange: #FF8A3D;
+    --sun: #FFCB47;
+    --mint: #2EE6B8;
+    --lime: #9BF25F;
+    --danger: #FF6B6B;
+    --grad-hot: linear-gradient(135deg, var(--hot) 0%, var(--orange) 55%, var(--sun) 100%);
+    --grad-fresh: linear-gradient(135deg, var(--mint) 0%, var(--lime) 100%);
+    --radius: 20px;
+    --radius-sm: 14px;
+    --blur: blur(22px) saturate(160%);
+    --font-display: "Outfit", system-ui, sans-serif;
+    --font-ui: "DM Sans", system-ui, sans-serif;
+    --font-mono: "DM Mono", ui-monospace, monospace;
+    --tabbar-h: 72px;
     color-scheme: dark;
-  }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-      --sea: #d3e6ec;
-      --sea-deep: #bcd7e0;
-      --text: #10303d;
-      --muted: #3e5f6b;
-      --line: rgba(16, 48, 61, .15);
-      --wheat: #a8780e;
-      --lattice: rgba(16, 48, 61, .08);
-      --piece-edge: rgba(16, 48, 61, .55);
-      color-scheme: light;
-    }
   }
 
   * { box-sizing: border-box; }
-  html { background: var(--sea-deep); -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
-    min-height: 100vh;
+    min-height: 100dvh;
+    background: var(--bg);
     color: var(--text);
-    font: 400 17px/1.5 var(--sans);
-    background: linear-gradient(180deg, var(--sea) 0%, var(--sea) 40%, var(--sea-deep) 100%);
-    background-attachment: fixed;
+    font-family: var(--font-ui);
+    font-size: 17px;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
   }
-  /* A faint hex lattice at the top of the page, like the edge of the board. */
-  body::before {
-    content: "";
-    position: absolute; inset: 0 0 auto 0; height: 520px;
-    pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 0 L56 16.2 V48.5 L28 64.7 L0 48.5 V16.2 Z M28 64.7 V97' fill='none' stroke='white' stroke-width='1.2'/%3E%3C/svg%3E");
-    background-size: 56px 97px;
-    opacity: .5;
-    -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
-    mask-image: linear-gradient(180deg, #000 0%, transparent 100%);
-    filter: opacity(.14);
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; border: 0; background: none; padding: 0; touch-action: manipulation; }
+  [hidden] { display: none !important; }
+
+  /* Glowing gradient blobs behind the glass */
+  .aurora { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .aurora span { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.55; }
+  .aurora .a1 { width: 70vw; height: 70vw; max-width: 460px; max-height: 460px; background: var(--hot); top: -18%; left: -22%; }
+  .aurora .a2 { width: 60vw; height: 60vw; max-width: 400px; max-height: 400px; background: var(--orange); top: 8%; right: -30%; opacity: 0.4; }
+  .aurora .a3 { width: 80vw; height: 80vw; max-width: 520px; max-height: 520px; background: #6B4BFF; bottom: -25%; left: -10%; opacity: 0.35; }
+  .aurora .a4 { width: 50vw; height: 50vw; max-width: 320px; max-height: 320px; background: var(--mint); bottom: 10%; right: -20%; opacity: 0.22; }
+  @media (prefers-reduced-motion: no-preference) {
+    .aurora .a1 { animation: drift 22s ease-in-out infinite alternate; }
+    .aurora .a3 { animation: drift 28s ease-in-out infinite alternate-reverse; }
   }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) body::before { filter: invert(1) opacity(.12); }
+  @keyframes drift { to { transform: translate(12vw, 8vh) scale(1.1); } }
+
+  .glass {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    -webkit-backdrop-filter: var(--blur);
+    backdrop-filter: var(--blur);
   }
 
-  button { font: inherit; color: inherit; }
-  :focus-visible { outline: 3px solid var(--wheat); outline-offset: 3px; border-radius: 6px; }
-  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .num { font-variant-numeric: lining-nums tabular-nums; }
-
-  .wrap {
+  .app {
     position: relative;
-    max-width: 720px;
+    z-index: 1;
+    max-width: 560px;
     margin: 0 auto;
-    padding: calc(18px + env(safe-area-inset-top, 0px)) 20px calc(40px + env(safe-area-inset-bottom, 0px));
+    padding: calc(env(safe-area-inset-top) + 20px) 16px calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 32px);
   }
 
-  /* Masthead */
-  .masthead { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .brand { display: flex; align-items: center; gap: 10px; margin: 0; font: 700 17px/1.2 var(--serif); letter-spacing: .01em; }
-  .brand svg { width: 22px; height: 24px; flex: none; }
-  .refresh {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 7px 12px; border-radius: 8px;
-    border: 1px solid var(--line); background: transparent;
-    color: var(--muted); font-size: 15px; cursor: pointer;
+  /* Header */
+  .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+  .eyebrow {
+    margin: 0 0 2px;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    background: var(--grad-hot); -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .refresh:hover { color: var(--text); }
-  .refresh svg { width: 15px; height: 15px; }
-  .refresh[aria-busy="true"] svg { animation: spin .8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Hero: the state of play */
-  .hero {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: 18px 22px;
-    margin: 34px 0 10px;
-  }
-  .hero h1 {
-    margin: 0;
-    font: 800 clamp(38px, 10.5vw, 64px)/.98 var(--serif);
-    letter-spacing: -.015em;
-    text-wrap: balance;
-  }
-  .hero p { margin: 10px 0 0; color: var(--muted); max-width: 44ch; font-size: 18px; }
-
-  /* Number tokens: parchment discs with serif numerals */
-  .token {
-    --size: 44px;
-    width: var(--size); height: var(--size);
-    border-radius: 50%;
+  h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 34px; line-height: 1.05; letter-spacing: -0.02em; }
+  .icon-btn {
+    width: 48px; height: 48px; flex: none;
     display: grid; place-items: center;
-    flex: none;
-    background: radial-gradient(circle at 50% 42%, #f7edd3 0 55%, var(--parchment) 70%);
-    color: var(--brown);
-    font: 800 calc(var(--size) * .42)/1 var(--serif);
-    font-variant-numeric: lining-nums;
-    box-shadow:
-      inset 0 0 0 2px var(--parchment-edge),
-      inset 0 0 0 5px var(--parchment),
-      inset 0 0 0 6px rgba(59, 42, 24, .18),
-      0 3px 0 rgba(0, 0, 0, .28);
+    border-radius: 50%;
+    color: var(--muted);
   }
-  .token small { font-size: .6em; }
-  .hero .token { --size: clamp(92px, 24vw, 128px); }
-  .hero .token.lead { color: #9d2a20; }
+  .icon-btn:active { background: var(--surface-press); }
+  .icon-btn svg { width: 22px; height: 22px; }
 
-  /* Game filter */
-  .filters { display: flex; gap: 8px; margin: 24px -20px 0; padding: 2px 20px 4px; overflow-x: auto; scrollbar-width: none; }
-  .filters::-webkit-scrollbar { display: none; }
-  .filters:empty { display: none; }
-  .chip {
-    flex: none; cursor: pointer; white-space: nowrap;
-    padding: 6px 13px; border-radius: 8px;
-    border: 1px solid var(--line); background: transparent; font-size: 15px; color: var(--muted);
+  /* Summary card */
+  .hero {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;
+    padding: 18px 20px; border-radius: var(--radius); margin-bottom: 14px;
   }
-  .chip[aria-pressed="true"] { background: var(--parchment); color: var(--brown); border-color: var(--parchment-edge); font-weight: 700; }
-
-  h2 { margin: 44px 0 6px; font: 700 24px/1.2 var(--serif); }
-
-  /* Standings: the race for the longest road */
-  .standings { list-style: none; margin: 0; padding: 0; }
-  .standing {
-    display: grid;
-    grid-template-columns: 26px 1fr auto;
-    grid-template-areas: "pos who pts" "pos road pts";
-    align-items: center;
-    column-gap: 12px;
-    row-gap: 8px;
-    padding: 16px 0;
-    border-top: 1px solid var(--line);
+  .count { display: flex; align-items: baseline; gap: 10px; }
+  .count-num {
+    font-family: var(--font-mono); font-weight: 500; font-size: 52px; line-height: 1; letter-spacing: -0.04em;
+    background: var(--grad-hot); -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .standing:first-child { border-top: 0; }
-  .pos { grid-area: pos; align-self: start; padding-top: 3px; font: 700 18px/1 var(--serif); color: var(--muted); }
-  .who { grid-area: who; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; min-width: 0; }
-  .name { font: 700 21px/1.1 var(--serif); }
-  .wins { display: inline-flex; align-items: center; gap: 5px; font-size: 15px; color: var(--muted); }
-  .wins svg { width: 13px; height: 13px; fill: currentColor; }
-  .standing .token { grid-area: pts; --size: 50px; }
+  .count-label { font-size: 17px; color: var(--muted); font-weight: 500; }
+  .sync { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--faint); padding-bottom: 6px; }
+  .sync .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
+  .sync[data-state="ok"] .dot { background: var(--mint); box-shadow: 0 0 10px var(--mint); }
+  .sync[data-state="offline"] { color: var(--sun); }
+  .sync[data-state="offline"] .dot { background: var(--sun); }
 
-  .hex { display: inline-block; width: 15px; height: 17px; flex: none; align-self: center; position: relative; top: -1px; overflow: visible; }
-  .hex polygon { fill: var(--c); stroke: var(--piece-edge); stroke-width: 1.4; }
-
-  .road-track { grid-area: road; height: 16px; position: relative; }
-  .road {
-    height: 100%;
-    width: calc(var(--share) * 100%);
-    min-width: 6px;
-    /* One road piece per unit, with a gap between pieces */
-    background-image: linear-gradient(90deg, var(--c) 0, var(--c) calc(100% - 3px), transparent calc(100% - 3px));
-    background-size: calc(100% / var(--pieces)) 100%;
-    background-repeat: repeat-x;
-    filter: drop-shadow(0 0 0.6px var(--piece-edge)) drop-shadow(0 2px 0 rgba(0, 0, 0, .3));
-    transform-origin: left center;
+  /* Add box */
+  .add { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 18px; border-radius: 999px; margin-bottom: 22px; }
+  .add:focus-within { border-color: var(--border-strong); background: var(--surface-strong); }
+  .add input { flex: 1; min-width: 0; height: 48px; border: 0; outline: 0; background: none; font-size: 17px; }
+  .add input::placeholder { color: var(--faint); }
+  .add-btn {
+    width: 48px; height: 48px; flex: none; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--grad-hot); color: #1A0A12;
+    box-shadow: 0 6px 20px -6px var(--hot);
   }
-  .road.none { background: none; filter: none; width: auto; font-size: 14px; color: var(--muted); height: auto; }
-  .build .road { animation: build .9s cubic-bezier(.3, .8, .3, 1) both; animation-delay: calc(var(--i) * 90ms + 150ms); }
-  @keyframes build { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-  .road-key { margin: 10px 0 0; font-size: 14px; color: var(--muted); }
+  .add-btn:active { transform: scale(0.94); }
+  .add-btn svg { width: 22px; height: 22px; }
 
-  /* Honours: styled after Catan's special cards */
-  .honours { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 14px; }
-  .honour {
-    background: var(--parchment);
-    color: var(--brown);
-    border-radius: 10px;
-    padding: 14px 16px 15px;
-    box-shadow: inset 0 0 0 1px var(--parchment-edge), inset 0 0 0 6px var(--parchment), inset 0 0 0 7px rgba(59, 42, 24, .2), 0 4px 0 rgba(0, 0, 0, .22);
+  /* Items */
+  .items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .item { border-radius: var(--radius-sm); transition: background 0.15s; }
+  .item-row { display: flex; align-items: stretch; }
+  .tick {
+    flex: 1; min-width: 0; min-height: 60px;
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 4px 12px 16px; border-radius: var(--radius-sm);
+    text-align: left;
+    transition: background 0.15s, transform 0.1s;
   }
-  .honour h3 { margin: 0; font: 700 15px/1.2 var(--sans); color: #6b5537; }
-  .honour .holder { display: flex; align-items: center; gap: 8px; margin-top: 8px; font: 800 22px/1.1 var(--serif); }
-  .honour .detail { margin-top: 3px; font-size: 15px; }
+  .tick:active { background: var(--surface-press); transform: scale(0.99); }
+  .qty-btn {
+    flex: none; align-self: center;
+    min-width: 56px; height: 44px; margin-right: 8px; padding: 0 12px;
+    border-radius: 12px;
+    font-family: var(--font-mono); font-size: 16px; font-weight: 500;
+    color: var(--muted);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px dashed rgba(255, 255, 255, 0.14);
+  }
+  .qty-btn.has-qty {
+    color: var(--text);
+    background: rgba(255, 138, 61, 0.14);
+    border: 1px solid rgba(255, 138, 61, 0.35);
+  }
+  .qty-btn:active { transform: scale(0.95); }
+  .qty-btn[aria-expanded="true"] { border-style: solid; border-color: var(--orange); color: var(--text); }
+  .item[data-ticked="true"] .qty-btn { pointer-events: none; opacity: 0.5; background: none; border-color: transparent; }
+  .stepper { display: flex; align-items: center; gap: 10px; padding: 0 12px 12px 58px; }
+  .step {
+    width: 56px; height: 52px; flex: none; border-radius: 14px;
+    display: grid; place-items: center;
+    background: var(--surface-strong); border: 1px solid var(--border);
+  }
+  .step:active { background: var(--surface-press); transform: scale(0.95); }
+  .step:disabled { opacity: 0.35; }
+  .step svg { width: 22px; height: 22px; }
+  .step-value { flex: 1; text-align: center; font-family: var(--font-mono); font-size: 22px; font-weight: 500; }
+  .check {
+    width: 28px; height: 28px; flex: none; border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    display: grid; place-items: center;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .check svg { width: 16px; height: 16px; color: #062019; opacity: 0; transform: scale(0.5); transition: opacity 0.15s, transform 0.2s; }
+  .item-body { flex: 1; min-width: 0; }
+  .item-text { display: block; font-size: 17px; font-weight: 500; overflow-wrap: anywhere; }
+  .item-meta { display: block; font-size: 13px; color: var(--faint); margin-top: 1px; }
+  .item[data-ticked="true"] { background: rgba(255, 255, 255, 0.025); border-color: rgba(255, 255, 255, 0.05); }
+  .item[data-ticked="true"] .check { background: var(--grad-fresh); border-color: transparent; }
+  .item[data-ticked="true"] .check svg { opacity: 1; transform: none; }
+  .item[data-ticked="true"] .item-text { color: var(--faint); text-decoration: line-through; text-decoration-color: rgba(255,255,255,0.3); }
+  .add.busy { opacity: 0.6; }
 
-  /* Recent games */
-  .log { list-style: none; margin: 0; padding: 0; }
-  .log li { padding: 14px 0; border-top: 1px solid var(--line); }
-  .log li:first-child { border-top: 0; }
-  .log .meta { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; color: var(--muted); }
-  .log .meta strong { color: var(--text); font-weight: 700; }
-  .placings { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 7px; }
-  .placing { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
-  .placing .hex { width: 12px; height: 14px; }
-  .placing .how { color: var(--muted); }
-  .placing .plus { font-size: 14px; color: var(--muted); }
-  .placing.won { font-weight: 700; }
+  .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 28px 4px 10px; }
+  h2 { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 20px; letter-spacing: -0.01em; }
+  h2 .mono { font-family: var(--font-mono); font-weight: 400; font-size: 16px; color: var(--faint); margin-left: 6px; }
+  .ghost-btn {
+    min-height: 44px; padding: 0 18px; border-radius: 999px;
+    font-size: 15px; font-weight: 600;
+    background: var(--surface-strong); border: 1px solid var(--border);
+  }
+  .ghost-btn:active { background: var(--surface-press); }
+  .ghost-btn.confirm { background: var(--danger); border-color: transparent; color: #2A0707; }
 
-  .notice { margin-top: 40px; padding: 22px; border-radius: 10px; border: 1px dashed var(--line); }
-  .notice h2 { margin: 0 0 6px; }
-  .notice p { margin: 0; color: var(--muted); max-width: 60ch; }
-  .notice code { font: 500 15px var(--sans); color: var(--text); background: var(--line); padding: 1px 6px; border-radius: 4px; }
-  .foot { margin: 36px 0 0; font-size: 14px; color: var(--muted); }
+  .empty { text-align: center; padding: 40px 20px; border-radius: var(--radius); }
+  .empty-emoji { font-size: 44px; line-height: 1; margin-bottom: 12px; }
+  .empty h2 { margin-bottom: 6px; }
+  .empty p { margin: 0; color: var(--muted); font-size: 15px; }
 
-  @media (max-width: 519px) {
-    .honour:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  /* Tab bar */
+  .tabs {
+    position: fixed; z-index: 5;
+    left: 50%; transform: translateX(-50%);
+    bottom: calc(env(safe-area-inset-bottom) + 12px);
+    width: calc(100% - 32px); max-width: 420px; height: var(--tabbar-h);
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
+    padding: 6px; border-radius: 26px;
+    background: rgba(20, 18, 32, 0.6);
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
   }
-  @media (min-width: 620px) {
-    .standing { grid-template-columns: 30px minmax(150px, 190px) 1fr auto; grid-template-areas: "pos who road pts"; row-gap: 0; }
-    .pos { align-self: center; padding-top: 0; }
-    .who { flex-direction: column; gap: 2px; }
+  .tab {
+    border-radius: 20px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    font-size: 13px; font-weight: 600; color: var(--faint);
   }
-  @media (prefers-reduced-motion: reduce) {
-    .build .road, .refresh[aria-busy="true"] svg { animation: none; }
+  .tab svg { width: 24px; height: 24px; }
+  .tab[aria-selected="true"] { color: var(--text); background: var(--surface-strong); }
+  .tab[aria-selected="true"] svg { color: var(--orange); }
+
+  /* Dinners */
+  .add-meal-btn {
+    display: flex; align-items: center; gap: 6px;
+    height: 48px; padding: 0 18px 0 14px; border-radius: 999px;
+    font-weight: 600; color: #1A0A12;
+    background: var(--grad-hot); box-shadow: 0 6px 20px -6px var(--hot);
   }
+  .add-meal-btn svg { width: 20px; height: 20px; }
+  .add-meal-btn:active { transform: scale(0.96); }
+  .meals { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .meal { border-radius: var(--radius); overflow: hidden; }
+  .meal-main { width: 100%; display: flex; align-items: center; gap: 14px; padding: 12px; text-align: left; }
+  .meal-main:active { background: var(--surface-press); }
+  .meal-photo {
+    width: 76px; height: 76px; flex: none; border-radius: 14px; overflow: hidden;
+    display: grid; place-items: center; font-size: 30px;
+    background: linear-gradient(135deg, rgba(255, 79, 139, 0.35), rgba(255, 138, 61, 0.35));
+  }
+  .meal-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .meal-body { flex: 1; min-width: 0; }
+  .meal-name { display: block; font-family: var(--font-display); font-weight: 600; font-size: 19px; line-height: 1.2; overflow-wrap: anywhere; }
+  .meal-meta { display: block; margin-top: 4px; font-size: 14px; color: var(--muted); }
+  .meal-meta .mono { font-family: var(--font-mono); }
+  .meal-foot { display: flex; justify-content: flex-end; padding: 0 12px 12px; margin-top: -4px; }
+  .recipe-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    min-height: 44px; padding: 0 16px; border-radius: 999px;
+    font-size: 15px; font-weight: 600; color: var(--text); text-decoration: none;
+    background: var(--surface-strong); border: 1px solid var(--border);
+  }
+  .recipe-link:active { background: var(--surface-press); }
+  .recipe-link svg { width: 16px; height: 16px; color: var(--orange); }
+
+  .view-toggle {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+    padding: 4px; border-radius: 999px; margin-bottom: 14px;
+  }
+  .view-toggle button {
+    min-height: 44px; border-radius: 999px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 15px; font-weight: 600; color: var(--faint);
+  }
+  .view-toggle button svg { width: 18px; height: 18px; }
+  .view-toggle button[aria-pressed="true"] { color: var(--text); background: var(--surface-strong); }
+  .view-toggle button[aria-pressed="true"] svg { color: var(--orange); }
+
+  /* Dinners: compact list view */
+  .meals.compact { gap: 0; }
+  .meal-letter {
+    padding: 18px 6px 6px;
+    font-family: var(--font-display); font-weight: 700; font-size: 15px;
+    background: var(--grad-hot); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .meal-letter:first-child { padding-top: 0; }
+  .meal-row { display: flex; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.07); }
+  .meal-letter + .meal-row { border-top: 1px solid rgba(255, 255, 255, 0.07); }
+  .meal-row-main {
+    flex: 1; min-width: 0; min-height: 52px;
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 4px 8px 6px; border-radius: 10px; text-align: left;
+  }
+  .meal-row-main:active { background: var(--surface-press); }
+  .meal-row-name { flex: 1; min-width: 0; font-weight: 500; font-size: 16px; line-height: 1.3; overflow-wrap: anywhere; }
+  .meal-row-count { flex: none; font-size: 13px; color: var(--faint); }
+  .meal-row-count .mono { font-family: var(--font-mono); }
+  .meal-row-count.missing { color: var(--sun); }
+  .meal-row-link, .meal-row-spacer { width: 44px; height: 48px; flex: none; }
+  .meal-row-link { display: grid; place-items: center; border-radius: 12px; color: var(--orange); }
+  .meal-row-link:active { background: var(--surface-press); }
+  .meal-row-link svg { width: 18px; height: 18px; }
+
+  /* Meal editor */
+  .sheet {
+    position: fixed; inset: 0; z-index: 15;
+    overflow-y: auto; overscroll-behavior: contain;
+    background: rgba(10, 9, 18, 0.82);
+    -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);
+  }
+  .sheet-inner {
+    max-width: 560px; margin: 0 auto;
+    padding: calc(env(safe-area-inset-top) + 8px) 16px calc(env(safe-area-inset-bottom) + 32px);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .sheet-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; min-height: 56px; }
+  .sheet-head h2 { font-size: 20px; }
+  .text-btn { justify-self: start; min-height: 44px; padding: 0 4px; font-weight: 600; color: var(--orange); }
+  .card { border-radius: var(--radius); padding: 16px; }
+  .field-label { display: block; font-size: 14px; font-weight: 600; color: var(--muted); margin: 0 0 6px 2px; }
+  .field-label em { font-style: normal; font-weight: 400; color: var(--faint); }
+  .text-input + .field-label { margin-top: 14px; }
+  .text-input, .url-row input, .paste-box textarea {
+    width: 100%; min-height: 52px; padding: 0 14px;
+    border-radius: var(--radius-sm); outline: 0;
+    background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border);
+    font-size: 17px;
+  }
+  .text-input:focus, .url-row input:focus, .paste-box textarea:focus { border-color: var(--orange); }
+  .url-row { display: flex; gap: 8px; }
+  .url-row input { flex: 1; min-width: 0; }
+  .fetch-btn {
+    flex: none; min-width: 84px; min-height: 52px; padding: 0 16px; border-radius: var(--radius-sm);
+    font-weight: 700; color: #1A0A12; background: var(--grad-hot);
+  }
+  .fetch-btn:disabled { opacity: 0.6; }
+  .hint { margin: 10px 2px 0; font-size: 14px; color: var(--muted); }
+  .hint:empty { display: none; }
+  .hint.warn { color: var(--sun); }
+  .hint.good { color: var(--mint); }
+  .photo { position: relative; border-radius: var(--radius); overflow: hidden; aspect-ratio: 16 / 9; }
+  .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .photo-remove {
+    position: absolute; right: 10px; bottom: 10px; min-height: 40px; padding: 0 14px; border-radius: 999px;
+    font-size: 14px; font-weight: 600; background: rgba(10, 9, 18, 0.7);
+  }
+  .ing-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .ing-head h3 { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 19px; }
+  .ing-head .mono { font-family: var(--font-mono); font-weight: 400; font-size: 15px; color: var(--faint); margin-left: 8px; }
+  .jar-inline { display: inline-grid; vertical-align: -3px; color: var(--mint); }
+  .jar-inline svg { width: 17px; height: 17px; }
+  .paste-box { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .paste-box textarea { padding: 12px 14px; line-height: 1.45; resize: vertical; font-family: var(--font-ui); }
+  .ing-list { list-style: none; margin: 12px 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .ing { display: flex; align-items: flex-start; gap: 4px; }
+  .ing-text {
+    flex: 1; min-width: 0; min-height: 48px; padding: 12px;
+    border-radius: 12px; outline: 0; resize: none; overflow: hidden;
+    background: rgba(0, 0, 0, 0.22); border: 1px solid var(--border);
+    font-family: var(--font-ui); font-size: 16px; line-height: 1.4;
+  }
+  .ing-text:focus { border-color: var(--orange); }
+  .ing-staple, .ing-del {
+    width: 44px; height: 48px; flex: none; border-radius: 12px;
+    display: grid; place-items: center;
+    border: 1px solid transparent;
+  }
+  .ing-staple { color: var(--faint); }
+  .ing-staple svg { width: 22px; height: 22px; }
+  .ing-staple[aria-pressed="true"] { color: var(--mint); background: rgba(46, 230, 184, 0.14); border-color: rgba(46, 230, 184, 0.45); }
+  .ing[data-staple="true"] .ing-text { color: var(--muted); border-style: dashed; }
+  .ing-del { color: var(--faint); }
+  .ing-del svg { width: 18px; height: 18px; }
+  .ing-staple:active, .ing-del:active { background: var(--surface-press); }
+  .ghost-btn.wide { width: 100%; }
+  .sheet-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+  .danger-btn {
+    width: 100%; min-height: 52px; border-radius: 999px;
+    font-weight: 600; color: var(--danger);
+    background: rgba(255, 107, 107, 0.08); border: 1px solid rgba(255, 107, 107, 0.3);
+  }
+  .danger-btn.confirm { background: var(--danger); color: #2A0707; }
+  body.sheet-open { overflow: hidden; }
+
+  /* Lock screen */
+  .lock {
+    position: fixed; inset: 0; z-index: 20;
+    display: grid; place-items: center;
+    padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px);
+    overflow-y: auto;
+    background: rgba(10, 9, 18, 0.72);
+    -webkit-backdrop-filter: blur(30px);
+    backdrop-filter: blur(30px);
+  }
+  .lock-card { width: 100%; max-width: 400px; padding: 28px 22px; border-radius: 28px; }
+  .lock-logo {
+    width: 64px; height: 64px; border-radius: 20px; margin-bottom: 18px;
+    display: grid; place-items: center; font-size: 32px;
+    background: var(--grad-hot); box-shadow: 0 12px 30px -10px var(--hot);
+  }
+  .lock-card h1 { margin-bottom: 8px; }
+  .lock-card > p { margin: 0 0 22px; color: var(--muted); font-size: 15px; }
+  .field { display: block; margin-bottom: 14px; }
+  .field span { display: block; font-size: 14px; font-weight: 600; color: var(--muted); margin: 0 0 6px 4px; }
+  .field input {
+    width: 100%; height: 54px; padding: 0 16px;
+    border-radius: var(--radius-sm); outline: 0;
+    background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border);
+    font-size: 17px;
+  }
+  .field input:focus { border-color: var(--orange); }
+  .error { min-height: 20px; margin: 0 0 10px 4px; color: var(--danger); font-size: 14px; font-weight: 500; }
+  .primary {
+    width: 100%; height: 56px; border-radius: 999px;
+    font-family: var(--font-display); font-size: 18px; font-weight: 700; color: #1A0A12;
+    background: var(--grad-hot); box-shadow: 0 10px 28px -10px var(--hot);
+  }
+  .primary:active { transform: scale(0.98); }
+  .primary:disabled { opacity: 0.6; }
+
+  /* Toast */
+  .toast {
+    position: fixed; z-index: 30; left: 50%;
+    bottom: calc(env(safe-area-inset-bottom) + var(--tabbar-h) + 24px);
+    transform: translate(-50%, 12px); opacity: 0;
+    width: max-content; max-width: calc(100% - 32px);
+    padding: 12px 18px; border-radius: 16px;
+    background: rgba(30, 27, 46, 0.85);
+    font-size: 15px; font-weight: 500;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .items li { animation: rise 0.25s ease-out both; }
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } }
 </style>
 </head>
 <body>
-<main class="wrap">
-  <header class="masthead">
-    <p class="brand">
-      <svg viewBox="0 0 44 50" aria-hidden="true"><polygon points="22,2 42,13.5 42,36.5 22,48 2,36.5 2,13.5" fill="#e3b43f" stroke="#3b2a18" stroke-width="3"/></svg>
-      <span id="brand-title">Official Catan Leaderboard</span>
-    </p>
-    <button id="refresh" class="refresh" type="button">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
-      Refresh
+<div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span><span class="a4"></span></div>
+
+<main class="app">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Yong Kitchen</p>
+      <h1 id="title">Shopping list</h1>
+    </div>
+    <button class="icon-btn" id="lockBtn" aria-label="Lock this phone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10.5" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>
     </button>
   </header>
 
-  <nav id="filters" class="filters" aria-label="Show results for"></nav>
+  <section id="view-list">
+    <div class="hero glass">
+      <div class="count"><span class="count-num" id="countNum">0</span><span class="count-label" id="countLabel">to get</span></div>
+      <div class="sync" id="sync" data-state="loading"><span class="dot"></span><span id="syncText">Syncing…</span></div>
+    </div>
 
-  <div id="content" aria-live="polite">
-    <section class="hero"><div class="token" aria-hidden="true">…</div><div><h1>Loading scores</h1></div></section>
-  </div>
+    <form class="add glass" id="addForm" autocomplete="off">
+      <input id="addInput" type="text" placeholder="Add: milk x2, 500g mince…" enterkeyhint="done" maxlength="500" aria-label="Add items">
+      <button class="add-btn" type="submit" aria-label="Add to list">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </form>
 
-  <p id="updated" class="foot"></p>
+    <ul class="items" id="todo"></ul>
+
+    <div class="empty glass" id="empty" hidden>
+      <div class="empty-emoji" id="emptyEmoji">🧺</div>
+      <h2 id="emptyTitle">Nothing on the list</h2>
+      <p id="emptyText">Text the bot or add something above.</p>
+    </div>
+
+    <section id="doneSection" hidden>
+      <div class="section-head">
+        <h2>In the trolley<span class="mono" id="doneCount"></span></h2>
+        <button class="ghost-btn" id="clearBtn" type="button">Clear ticked</button>
+      </div>
+      <ul class="items" id="done"></ul>
+    </section>
+  </section>
+
+  <section id="view-week" hidden>
+    <div class="empty glass">
+      <div class="empty-emoji">🗓️</div>
+      <h2>The weekly planner is on the way</h2>
+      <p>Meanwhile, fill up the Dinners tab so there's plenty to pick from.</p>
+    </div>
+  </section>
+
+  <section id="view-dinners" hidden>
+    <div class="hero glass">
+      <div class="count"><span class="count-num" id="mealCount">0</span><span class="count-label" id="mealLabel">dinners</span></div>
+      <button class="add-meal-btn" id="newMealBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Add dinner
+      </button>
+    </div>
+    <div class="view-toggle glass" role="group" aria-label="How to show dinners">
+      <button type="button" data-view="cards" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg>
+        Cards
+      </button>
+      <button type="button" data-view="list" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg>
+        List
+      </button>
+    </div>
+    <ul class="meals" id="meals"></ul>
+    <div class="empty glass" id="mealsEmpty" hidden>
+      <div class="empty-emoji">🍝</div>
+      <h2>No dinners yet</h2>
+      <p>Add your go-to meals. Paste a recipe link and the ingredients fill themselves in.</p>
+    </div>
+  </section>
 </main>
 
-<script>
-/* ───────────── Settings ───────────── */
-const CONFIG = {
-  // From the Sheet's address: docs.google.com/spreadsheets/d/THIS_PART/edit
-  // The Sheet must be shared as "Anyone with the link: Viewer".
-  SHEET_ID: "1ill11deMa9w1VmY9iRIsuWTCdwTI9GF-0QxSTaqC-Ts",
-  TITLE: "Official Catan Leaderboard",
-  // Optional fallback: File → Share → Publish to web → CSV links for each tab.
-  PUBLISHED_CSV: { Results: "", Games: "", Players: "" },
-  REFRESH_SECONDS: 60,
-};
+<nav class="tabs glass" role="tablist" aria-label="Sections">
+  <button class="tab" role="tab" data-tab="list" aria-selected="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2.2l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1L21 8H6.1"/><circle cx="9.5" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/></svg>
+    <span>List</span>
+  </button>
+  <button class="tab" role="tab" data-tab="week" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14.5h2M14 14.5h2M8 17.5h2"/></svg>
+    <span>This week</span>
+  </button>
+  <button class="tab" role="tab" data-tab="dinners" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7"/><circle cx="12" cy="13" r="3.5"/><path d="M3 3v5a2 2 0 0 0 2 2M3 3v7M21 3c-1.5 1-2 3-2 5s1 2 1 2v11"/></svg>
+    <span>Dinners</span>
+  </button>
+</nav>
 
-/* Catan's own player colours. Set each person's colour in the "colour" column of the Players tab;
-   anyone without one gets the next unused colour, in the order people first played. */
-const NAMED = {
-  red: "#c8342b", white: "#f1ede2", orange: "#e27d22", blue: "#3f7fe0",
-  green: "#3f8b4e", brown: "#8a5a34", purple: "#9a5cc4", teal: "#1fa39c",
-};
-const PIECES = Object.values(NAMED);
+<div class="lock" id="lock" hidden>
+  <form class="lock-card glass" id="lockForm">
+    <div class="lock-logo" aria-hidden="true">🛒</div>
+    <h1>Yong Kitchen</h1>
+    <p>Enter the household passcode. This phone will remember it.</p>
+    <label class="field">
+      <span>Passcode</span>
+      <input id="passInput" type="password" autocomplete="current-password" required>
+    </label>
+    <label class="field">
+      <span>Your name (optional)</span>
+      <input id="nameInput" type="text" maxlength="30" placeholder="e.g. Tim" autocomplete="given-name">
+    </label>
+    <p class="error" id="lockError" role="alert"></p>
+    <button class="primary" id="unlockBtn" type="submit">Unlock</button>
+  </form>
+</div>
 
-function toColour(v) {
-  const t = String(v || "").trim().toLowerCase();
-  if (NAMED[t]) return NAMED[t];
-  if (t === "grey" || t === "gray") return "#8d969b";
-  return /^#[0-9a-f]{6}$/.test(t) ? t : null;
-}
+<div class="sheet" id="editor" hidden role="dialog" aria-modal="true" aria-labelledby="editorTitle">
+  <form class="sheet-inner" id="mealForm" novalidate autocomplete="off">
+    <header class="sheet-head">
+      <button type="button" class="text-btn" id="editorCancel">Cancel</button>
+      <h2 id="editorTitle">New dinner</h2>
+      <span class="sheet-head-spacer"></span>
+    </header>
 
-const state = { filter: "all", games: [], scoring: {}, colours: {}, loadedAt: null, firstRender: true };
-const $ = (id) => document.getElementById(id);
-document.title = CONFIG.TITLE;
-$("brand-title").textContent = CONFIG.TITLE;
-
-/* ───────────── Loading ───────────── */
-
-async function fetchTab(tab) {
-  let url = CONFIG.PUBLISHED_CSV[tab];
-  if (!url) {
-    if (!CONFIG.SHEET_ID) throw Object.assign(new Error("setup"), { kind: "setup" });
-    url = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(CONFIG.SHEET_ID)}/gviz/tq?tqx=out:csv&headers=1&sheet=${encodeURIComponent(tab)}`;
-  }
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const text = await res.text();
-  if (/^\s*</.test(text)) throw Object.assign(new Error("not shared"), { kind: "access" });
-  return toObjects(parseCSV(text));
-}
-
-function parseCSV(text) {
-  const rows = []; let row = [], field = "", quoted = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (quoted) {
-      if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else quoted = false; }
-      else field += c;
-    } else if (c === '"') quoted = true;
-    else if (c === ",") { row.push(field); field = ""; }
-    else if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; }
-    else if (c !== "\r") field += c;
-  }
-  if (field !== "" || row.length) { row.push(field); rows.push(row); }
-  return rows;
-}
-
-function toObjects(rows) {
-  if (!rows.length) return [];
-  const keys = rows[0].map((h) => h.trim().toLowerCase());
-  return rows.slice(1)
-    .filter((r) => r.some((v) => v.trim() !== ""))
-    .map((r) => Object.fromEntries(keys.map((k, i) => [k, (r[i] ?? "").trim()])));
-}
-
-const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-
-function parseAt(s) {
-  let m = /^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?/.exec(s || "");
-  if (m) return new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0));
-  m = /^(\d{1,2})\/(\d{1,2})\/(\d{2,4})(?:\s+(\d{1,2}):(\d{2}))?/.exec(s || "");
-  if (m) return new Date(m[3].length === 2 ? 2000 + +m[3] : +m[3], +m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0));
-  return null;
-}
-
-// Placing points: 5 for 1st, 4 for 2nd, 3 for 3rd, 2 for 4th, 1 for 5th and below.
-// Tied players share the points for the places they cover.
-const placePoints = (place) => Math.max(1, 6 - place);
-
-function groupGames(results) {
-  const map = new Map();
-  for (const r of results) {
-    const id = Number(r.game_id);
-    if (!id || !r.player) continue;
-    let g = map.get(id);
-    if (!g) { g = { id, game: r.game, at: parseAt(r.logged_at), entries: [] }; map.set(id, g); }
-    g.entries.push({ player: r.player, score: r.score === "" ? null : Number(r.score), rank: Number(r.rank) || 0 });
-  }
-  const list = [...map.values()].sort((a, b) => a.id - b.id);
-  for (const g of list) {
-    g.entries.sort((a, b) => a.rank - b.rank);
-    const tied = {};
-    for (const e of g.entries) tied[e.rank] = (tied[e.rank] || 0) + 1;
-    for (const e of g.entries) {
-      let sum = 0;
-      for (let p = e.rank; p < e.rank + tied[e.rank]; p++) sum += placePoints(p);
-      e.points = sum / tied[e.rank];
-      e.tied = tied[e.rank] > 1;
-    }
-    const lastRank = Math.max(...g.entries.map((e) => e.rank));
-    for (const e of g.entries) e.last = e.rank === lastRank && lastRank > 1;
-  }
-  return list;
-}
-
-async function load() {
-  const btn = $("refresh");
-  btn.setAttribute("aria-busy", "true");
-  try {
-    const [results, games, players] = await Promise.all([
-      fetchTab("Results"),
-      fetchTab("Games").catch(() => []),
-      fetchTab("Players").catch(() => []),
-    ]);
-    state.games = groupGames(results);
-    state.scoring = {};
-    for (const g of games) if (g.name) state.scoring[norm(g.name)] = /^low/i.test(g.scoring || "") ? "low" : "high";
-    // Chosen colours first, then everyone else gets the next colour nobody has picked.
-    state.colours = {};
-    const chosen = {};
-    for (const p of players) { const c = toColour(p.colour); if (p.name && c) chosen[norm(p.name)] = c; }
-    const taken = new Set(Object.values(chosen));
-    const spare = PIECES.filter((c) => !taken.has(c));
-    let n = 0;
-    for (const g of state.games) for (const e of g.entries) {
-      if (e.player in state.colours) continue;
-      state.colours[e.player] = chosen[norm(e.player)] || spare[n++ % Math.max(spare.length, 1)] || PIECES[0];
-    }
-    state.loadedAt = new Date();
-    if (state.filter !== "all" && !state.games.some((g) => g.game === state.filter)) state.filter = "all";
-    render();
-  } catch (err) {
-    console.error(err);
-    renderProblem(err.kind);
-  } finally {
-    btn.removeAttribute("aria-busy");
-  }
-}
-
-/* ───────────── Stats ───────────── */
-
-function standings(games) {
-  const S = new Map();
-  const get = (p) => S.get(p) || S.set(p, { player: p, played: 0, wins: 0, points: 0, history: [], lastPlaces: 0, comebacks: 0, wasLast: false }).get(p);
-  for (const g of games) {
-    for (const e of g.entries) {
-      const s = get(e.player);
-      s.played++;
-      s.points += e.points;
-      if (e.rank === 1) s.wins++;
-      s.history.push(e.rank === 1);
-      if (e.last) s.lastPlaces++;
-      if (e.rank === 1 && s.wasLast) s.comebacks++; // won straight after coming last
-      s.wasLast = e.last;
-    }
-  }
-  return [...S.values()].map((s) => {
-    let best = 0, run = 0;
-    for (const won of s.history) { run = won ? run + 1 : 0; best = Math.max(best, run); }
-    return { ...s, bestStreak: best };
-  }).sort((a, b) => b.points - a.points || b.wins - a.wins || a.played - b.played || a.player.localeCompare(b.player));
-}
-
-// Best single-game score; everyone who hit it shares the honour.
-function topScores(games) {
-  let best = [];
-  for (const g of games) {
-    const low = state.scoring[norm(g.game)] === "low";
-    for (const e of g.entries) {
-      if (e.score === null || Number.isNaN(e.score)) continue;
-      const cur = best[0];
-      if (!cur || (low ? e.score < cur.score : e.score > cur.score)) best = [{ ...e, game: g.game, at: g.at }];
-      else if (e.score === cur.score && !best.some((b) => b.player === e.player)) best.push({ ...e, game: g.game, at: g.at });
-    }
-  }
-  return best;
-}
-
-/* ───────────── Formatting ───────────── */
-
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const colour = (p) => state.colours[p] || PIECES[0];
-const hex = (p) => `<svg class="hex" viewBox="0 0 15 17" style="--c:${colour(p)}" aria-hidden="true"><polygon points="7.5,0.8 14.2,4.6 14.2,12.4 7.5,16.2 0.8,12.4 0.8,4.6"/></svg>`;
-const plural = (n, one, many) => `${fmt(n)} ${n === 1 ? one : many}`;
-const andList = (a) => (a.length <= 1 ? a.join("") : `${a.slice(0, -1).join(", ")} and ${a[a.length - 1]}`);
-const oneGameName = () => new Set(state.games.map((g) => g.game)).size === 1;
-
-function fmt(n) { return Number.isInteger(n) ? String(n) : String(Math.round(n * 10) / 10); }
-function tokenNum(n) { return `<span>${Number.isInteger(n) ? String(n) : `${Math.floor(n) || ""}<small>½</small>`}</span>`; }
-function ordinal(n) { const t = n % 100; return n + (t >= 11 && t <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] || "th"); }
-
-// "today", "yesterday", "on Saturday", "on 3 September"
-function whenPhrase(d) {
-  const w = when(d);
-  return w === "Today" || w === "Yesterday" ? w.toLowerCase() : `on ${w}`;
-}
-
-function lead(diff) {
-  if (diff === 0.5) return "half a point";
-  return plural(diff, "point", "points");
-}
-
-function when(d) {
-  if (!d) return "";
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  const day = new Date(d); day.setHours(0, 0, 0, 0);
-  const diff = Math.round((today - day) / 86400000);
-  if (diff <= 0) return "Today";
-  if (diff === 1) return "Yesterday";
-  if (diff < 7) return day.toLocaleDateString("en-AU", { weekday: "long" });
-  return d.toLocaleDateString("en-AU", { day: "numeric", month: "long", ...(d.getFullYear() !== today.getFullYear() ? { year: "numeric" } : {}) });
-}
-
-/* ───────────── Rendering ───────────── */
-
-function render() {
-  renderFilters();
-  const games = state.filter === "all" ? state.games : state.games.filter((g) => g.game === state.filter);
-
-  if (!state.games.length) {
-    $("content").innerHTML = `<div class="notice"><h2>No games yet</h2><p>Log the first one in the family Telegram group, for example <code>/game Tim 10 Dad 9 Soph 7</code>, and it will appear here.</p></div>`;
-    renderUpdated();
-    return;
-  }
-
-  const table = standings(games);
-  $("content").innerHTML = heroHTML(table, games) + standingsHTML(table) + honoursHTML(table, games) + logHTML(games);
-
-  if (state.firstRender && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    $("content").querySelector(".standings")?.classList.add("build");
-  }
-  state.firstRender = false;
-  renderUpdated();
-}
-
-function heroHTML(table, games) {
-  const [first, second] = table;
-  const level = table.filter((s) => s.points === first.points);
-  let headline;
-  if (!second) headline = `${first.player} leads`;
-  else if (level.length > 1) headline = `${andList(level.map((s) => s.player))} are level`;
-  else headline = `${first.player} leads by ${lead(first.points - second.points)}`;
-
-  const scope = state.filter === "all"
-    ? (oneGameName() ? "" : " across all games")
-    : ` at ${state.filter}`;
-  const detail = `${plural(first.points, "point", "points")} and ${plural(first.wins, "win", "wins")} from ${plural(first.played, "game", "games")}${scope}.`;
-  const next = second && level.length === 1 ? ` ${second.player} is next on ${fmt(second.points)}.` : "";
-  const last = games[games.length - 1];
-
-  return `<section class="hero" aria-labelledby="h-hero">
-    <div class="token lead" role="img" aria-label="${fmt(first.points)} points">${tokenNum(first.points)}</div>
-    <div>
-      <h1 id="h-hero">${esc(headline)}</h1>
-      <p>${esc(detail + next)} Last game played ${esc(whenPhrase(last.at))}.</p>
-    </div>
-  </section>`;
-}
-
-function standingsHTML(table) {
-  const max = Math.max(...table.map((s) => s.points), 1);
-  const unit = max > 30 ? 5 : 1; // one road piece per point, or per 5 points once scores get big
-  let pos = 0;
-  const rows = table.map((s, i) => {
-    const prev = table[i - 1];
-    pos = prev && prev.points === s.points && prev.wins === s.wins ? pos : i + 1;
-    const road = s.points > 0
-      ? `<div class="road" style="--c:${colour(s.player)};--share:${s.points / max};--pieces:${s.points / unit};--i:${i}"></div>`
-      : `<div class="road none">No points yet</div>`;
-    return `<li class="standing">
-      <span class="pos num">${pos}</span>
-      <div class="who">
-        <span class="name">${hex(s.player)} ${esc(s.player)}</span>
-        <span class="wins">${s.wins ? `<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 0.5 11.5 5v6.5h-11V5z"/></svg>` : ""}${plural(s.wins, "win", "wins")} from ${plural(s.played, "game", "games")}</span>
+    <section class="card glass">
+      <label class="field-label" for="mealUrl">Recipe link <em>(optional)</em></label>
+      <div class="url-row">
+        <input id="mealUrl" type="url" inputmode="url" placeholder="Paste a recipe link" autocapitalize="off" spellcheck="false">
+        <button type="button" class="fetch-btn" id="fetchBtn">Fetch</button>
       </div>
-      <div class="road-track" aria-hidden="true">${road}</div>
-      <div class="token" role="img" aria-label="${fmt(s.points)} points">${tokenNum(s.points)}</div>
-    </li>`;
-  }).join("");
-  return `<h2>Standings</h2>
-    <ol class="standings">${rows}</ol>
-    <p class="road-key">Each road piece is ${unit === 1 ? "one point" : "five points"}. 1st place earns 5, 2nd 4, 3rd 3, 4th 2, everyone else 1.</p>`;
-}
+      <p class="hint" id="fetchStatus" role="status" aria-live="polite"></p>
+    </section>
 
-function honoursHTML(table, games) {
-  const cards = [];
-  const mostWins = Math.max(...table.map((s) => s.wins));
-  if (mostWins > 0) {
-    const who = table.filter((s) => s.wins === mostWins).map((s) => s.player);
-    cards.push(card("Most wins", who, plural(mostWins, "win", "wins")));
+    <div class="photo glass" id="mealPhoto" hidden>
+      <img id="mealPhotoImg" alt="" referrerpolicy="no-referrer">
+      <button type="button" class="photo-remove" id="photoRemove">Remove photo</button>
+    </div>
+
+    <section class="card glass">
+      <label class="field-label" for="mealName">Name</label>
+      <input class="text-input" id="mealName" maxlength="120" placeholder="e.g. Chilli con carne">
+      <label class="field-label" for="mealServings">Serves <em>(optional)</em></label>
+      <input class="text-input" id="mealServings" maxlength="60" placeholder="e.g. 4">
+    </section>
+
+    <section class="card glass">
+      <div class="ing-head">
+        <h3>Ingredients<span class="mono" id="ingCount"></span></h3>
+        <button type="button" class="ghost-btn" id="pasteToggle">Paste a list</button>
+      </div>
+      <p class="hint">Tap <span class="jar-inline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="3.5" rx="1"/><path d="M8 6c-1.8 1-3 2.7-3 4.6v7.9A2.5 2.5 0 0 0 7.5 21h9a2.5 2.5 0 0 0 2.5-2.5v-7.9C19 8.7 17.8 7 16 6"/><path d="M8.5 13.5h7"/></svg></span> on things you always have, like salt or olive oil. It's remembered for every recipe.</p>
+      <div class="paste-box" id="pasteBox" hidden>
+        <textarea id="pasteText" rows="6" placeholder="One ingredient per line"></textarea>
+        <button type="button" class="ghost-btn" id="pasteAdd">Add these</button>
+      </div>
+      <ul class="ing-list" id="ingList"></ul>
+      <button type="button" class="ghost-btn wide" id="ingAdd">+ Add ingredient</button>
+    </section>
+
+    <p class="error" id="editorError" role="alert"></p>
+    <div class="sheet-actions">
+      <button type="submit" class="primary" id="saveMeal">Save dinner</button>
+      <button type="button" class="danger-btn" id="deleteMeal" hidden>Delete dinner</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast glass" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  // The page never talks to the database directly: every read and write goes
+  // through the kitchen-api Edge Function, which checks the household passcode.
+  const API_URL = "https://enwktqmodzoyjcyhxbhr.supabase.co/functions/v1/kitchen-api";
+  const POLL_MS = 5000;
+
+  const $ = (id) => document.getElementById(id);
+
+  // localStorage can be blocked (private browsing), so never let it crash the page.
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+    remove(k) { try { localStorage.removeItem(k); } catch {} },
+  };
+
+  let passcode = store.get("kitchen.passcode");
+  let myName = store.get("kitchen.name") || "";
+  let items = [];
+  let lastRendered = "";
+  let pending = 0;   // mutations in flight
+  let epoch = 0;     // bumps on every mutation so stale polls are ignored
+  let pollTimer = null;
+  let openQtyId = null;         // item whose − / + buttons are showing
+  const qtyTimers = new Map();  // item id → quantity change waiting to be saved
+
+  class AuthError extends Error {}
+
+  async function api(action, body = {}, code = passcode) {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-kitchen-passcode": code || "" },
+      body: JSON.stringify({ action, ...body }),
+    });
+    let data = {};
+    try { data = await res.json(); } catch {}
+    if (res.status === 401) throw new AuthError(data.error || "Wrong passcode.");
+    if (!res.ok) throw new Error(data.error || `Server error (${res.status}).`);
+    return data;
   }
-  const tops = topScores(games);
-  if (tops.length) {
-    const t = tops[0];
-    const detail = tops.length === 1
-      ? `Scored ${fmt(t.score)}${oneGameName() ? "" : ` at ${t.game}`} ${whenPhrase(t.at)}`
-      : `Both scored ${fmt(t.score)}`.replace("Both", tops.length === 2 ? "Both" : "Each");
-    cards.push(card("Top score", tops.map((x) => x.player), detail));
+
+  // Mirrors formatAmount in supabase/functions/_shared/items.ts: 2 → "×2", 500 g → "500g", 3 tin → "3 tins"
+  const COUNTABLE_UNITS = new Set(["cup", "pack", "tin", "bottle", "bunch"]);
+  function formatAmount(qty, unit) {
+    const n = String(Math.round(Number(qty) * 100) / 100);
+    if (!unit) return "×" + n;
+    if (!COUNTABLE_UNITS.has(unit)) return unit.length <= 2 ? n + unit : `${n} ${unit}`;
+    return Number(qty) <= 1 ? `${n} ${unit}` : `${n} ${unit}${unit.endsWith("ch") ? "es" : "s"}`;
   }
-  const streak = Math.max(...table.map((s) => s.bestStreak));
-  if (streak >= 2) {
-    const who = table.filter((s) => s.bestStreak === streak).map((s) => s.player);
-    cards.push(card("Longest winning streak", who, `${streak} wins in a row`));
+
+  // How much one tap of − / + changes the amount.
+  function stepFor(unit) {
+    if (unit === "g" || unit === "ml") return 50;
+    if (unit === "kg" || unit === "L") return 0.5;
+    return 1;
   }
-  const comebacks = Math.max(...table.map((s) => s.comebacks));
-  if (comebacks > 0) {
-    const who = table.filter((s) => s.comebacks === comebacks).map((s) => s.player);
-    cards.push(card("Most comebacks", who, `${plural(comebacks, "win", "wins")} straight after coming last`));
+
+  /* ---------- Rendering ---------- */
+
+  const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+  const MINUS_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg>';
+  const PLUS_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+
+  function itemEl(item) {
+    const li = document.createElement("li");
+    li.className = "item glass";
+    li.dataset.id = item.id;
+    li.dataset.ticked = String(item.ticked);
+
+    const tick = document.createElement("button");
+    tick.type = "button";
+    tick.className = "tick";
+    tick.setAttribute("aria-pressed", String(item.ticked));
+
+    const check = document.createElement("span");
+    check.className = "check";
+    check.innerHTML = CHECK_SVG;
+
+    const body = document.createElement("span");
+    body.className = "item-body";
+    const text = document.createElement("span");
+    text.className = "item-text";
+    text.textContent = item.text;
+    body.append(text);
+    if (item.added_by) {
+      const meta = document.createElement("span");
+      meta.className = "item-meta";
+      meta.textContent = item.added_by;
+      body.append(meta);
+    }
+    tick.append(check, body);
+
+    const open = openQtyId === item.id && !item.ticked;
+    const qty = document.createElement("button");
+    qty.type = "button";
+    qty.className = "qty-btn" + (item.unit || Number(item.qty) !== 1 ? " has-qty" : "");
+    qty.textContent = formatAmount(item.qty, item.unit);
+    qty.setAttribute("aria-label", `Change amount of ${item.text}`);
+    qty.setAttribute("aria-expanded", String(open));
+
+    const row = document.createElement("div");
+    row.className = "item-row";
+    row.append(tick, qty);
+    li.append(row);
+
+    if (open) {
+      const stepper = document.createElement("div");
+      stepper.className = "stepper";
+      stepper.innerHTML = `<button type="button" class="step" data-step="-1" aria-label="Less">${MINUS_SVG}</button>`
+        + `<span class="step-value"></span>`
+        + `<button type="button" class="step" data-step="1" aria-label="More">${PLUS_SVG}</button>`;
+      stepper.querySelector(".step-value").textContent = formatAmount(item.qty, item.unit);
+      stepper.querySelector('[data-step="-1"]').disabled = Number(item.qty) - stepFor(item.unit) <= 0;
+      li.append(stepper);
+    }
+    return li;
   }
-  const spoon = Math.max(...table.map((s) => s.lastPlaces));
-  if (spoon > 0) {
-    const who = table.filter((s) => s.lastPlaces === spoon).map((s) => s.player);
-    cards.push(card("Wooden spoon", who, `Came last ${spoon === 1 ? "once" : spoon === 2 ? "twice" : `${spoon} times`}`));
+
+  function render() {
+    // Only touch the DOM when something changed, so a poll never swallows a tap.
+    const snapshot = JSON.stringify([items, openQtyId]);
+    if (snapshot === lastRendered) return;
+    lastRendered = snapshot;
+
+    const todo = items.filter((i) => !i.ticked);
+    const done = items.filter((i) => i.ticked)
+      .sort((a, b) => (b.ticked_at || "").localeCompare(a.ticked_at || ""));
+
+    $("todo").replaceChildren(...todo.map(itemEl));
+    $("done").replaceChildren(...done.map(itemEl));
+    $("countNum").textContent = todo.length;
+    $("countLabel").textContent = todo.length === 1 ? "thing to get" : "to get";
+    $("doneCount").textContent = done.length;
+    $("doneSection").hidden = done.length === 0;
+
+    const empty = todo.length === 0;
+    $("empty").hidden = !empty;
+    if (empty && done.length) {
+      $("emptyEmoji").textContent = "🎉";
+      $("emptyTitle").textContent = "All ticked off";
+      $("emptyText").textContent = "Clear the trolley when you're done.";
+    } else {
+      $("emptyEmoji").textContent = "🧺";
+      $("emptyTitle").textContent = "Nothing on the list";
+      $("emptyText").textContent = "Text the bot or add something above.";
+    }
   }
-  if (!cards.length) return "";
-  return `<h2>Honours</h2><div class="honours">${cards.join("")}</div>`;
 
-  function card(title, who, detail) {
-    return `<div class="honour"><h3>${esc(title)}</h3>
-      <div class="holder">${who.map(hex).join("")}<span>${esc(andList(who))}</span></div>
-      <div class="detail">${esc(detail)}</div></div>`;
+  function setSync(state) {
+    $("sync").dataset.state = state;
+    $("syncText").textContent = state === "ok" ? "Live" : state === "offline" ? "Offline, retrying" : "Syncing…";
   }
-}
 
-function logHTML(games) {
-  const recent = games.slice(-6).reverse();
-  const items = recent.map((g) => {
-    const hasScores = g.entries.some((e) => e.score !== null);
-    const placings = g.entries.map((e) => {
-      const how = hasScores ? fmt(e.score) : `${ordinal(e.rank)}${e.tied ? "=" : ""}`;
-      return `<span class="placing${e.rank === 1 ? " won" : ""}">${hex(e.player)}${esc(e.player)} <span class="how num">${esc(how)}</span> <span class="plus num">+${fmt(e.points)}</span></span>`;
-    }).join("");
-    return `<li><div class="meta"><span><strong>${esc(when(g.at))}</strong>${oneGameName() ? "" : `, ${esc(g.game)}`}</span><span>Game ${g.id}</span></div>
-      <div class="placings">${placings}</div></li>`;
-  }).join("");
-  return `<h2>Recent games</h2><ol class="log">${items}</ol>`;
-}
-
-function renderFilters() {
-  const counts = new Map();
-  for (const g of state.games) counts.set(g.game, (counts.get(g.game) || 0) + 1);
-  const names = [...counts.keys()].sort((a, b) => counts.get(b) - counts.get(a) || a.localeCompare(b));
-  const chip = (value, label) => `<button type="button" class="chip" data-game="${esc(value)}" aria-pressed="${state.filter === value}">${esc(label)}</button>`;
-  $("filters").innerHTML = names.length > 1 ? chip("all", "All games") + names.map((n) => chip(n, n)).join("") : "";
-}
-
-function renderUpdated() {
-  if (!state.loadedAt) return;
-  const t = state.loadedAt.toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit" });
-  $("updated").textContent = `Scores checked at ${t}. The page checks again every minute while it's open.`;
-}
-
-function renderProblem(kind) {
-  $("filters").innerHTML = "";
-  if (kind === "setup") {
-    $("content").innerHTML = `<div class="notice"><h2>Connect the scoresheet</h2><p>Paste the Google Sheet ID into <code>SHEET_ID</code> near the bottom of <code>index.html</code>, then upload the file again.</p></div>`;
-  } else if (!state.games.length) {
-    $("content").innerHTML = `<div class="notice"><h2>The scoresheet didn't load</h2><p>Check the Google Sheet is shared as “Anyone with the link: Viewer”, then press Refresh.</p></div>`;
-  } else {
-    $("updated").textContent = "Couldn't check for new scores just now. Showing the last ones loaded.";
+  let toastTimer;
+  function toast(message) {
+    const el = $("toast");
+    el.textContent = message;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
   }
-}
 
-/* ───────────── Events ───────────── */
+  /* ---------- Data ---------- */
 
-$("filters").addEventListener("click", (e) => {
-  const b = e.target.closest(".chip");
-  if (!b) return;
-  state.filter = b.dataset.game;
-  render();
-});
-$("refresh").addEventListener("click", load);
-document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") load(); });
-setInterval(() => { if (document.visibilityState === "visible") load(); }, CONFIG.REFRESH_SECONDS * 1000);
+  function handleError(err, quiet) {
+    if (err instanceof AuthError) {
+      showLock("The passcode was changed. Please enter the new one.");
+      return;
+    }
+    console.error(err);
+    setSync("offline");
+    if (!quiet) toast(err instanceof TypeError ? "No connection. Check your signal." : "⚠️ " + err.message);
+  }
 
-load();
+  async function refresh() {
+    if (!passcode || pending || qtyTimers.size) return;
+    const startEpoch = epoch;
+    try {
+      const data = await api("list");
+      if (pending || qtyTimers.size || startEpoch !== epoch) return; // a tap happened meanwhile; its reply wins
+      items = data.items;
+      render();
+      setSync("ok");
+    } catch (err) {
+      handleError(err, true);
+    }
+  }
+
+  async function mutate(action, body, optimistic) {
+    epoch++;
+    pending++;
+    if (optimistic) { optimistic(); render(); }
+    try {
+      const data = await api(action, body);
+      pending--;
+      if (!pending && !qtyTimers.size) { items = data.items; render(); }
+      setSync("ok");
+      return data;
+    } catch (err) {
+      pending--;
+      handleError(err);
+      if (!pending) refresh(); // undo the optimistic change
+      return null;
+    }
+  }
+
+  function startPolling() {
+    stopPolling();
+    refresh();
+    pollTimer = setInterval(() => { if (!document.hidden) refresh(); }, POLL_MS);
+  }
+  function stopPolling() { clearInterval(pollTimer); pollTimer = null; }
+
+  /* ---------- Actions ---------- */
+
+  $("todo").addEventListener("click", onListTap);
+  $("done").addEventListener("click", onListTap);
+  function onListTap(e) {
+    const li = e.target.closest(".item");
+    if (!li) return;
+    const id = Number(li.dataset.id);
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+
+    if (e.target.closest(".qty-btn")) {
+      openQtyId = openQtyId === id ? null : id;
+      render();
+      return;
+    }
+    const step = e.target.closest(".step");
+    if (step) {
+      changeQty(item, Number(step.dataset.step));
+      return;
+    }
+    if (!e.target.closest(".tick")) return;
+
+    const ticked = !item.ticked;
+    if (ticked && openQtyId === id) openQtyId = null;
+    if (navigator.vibrate) navigator.vibrate(8);
+    flushQty();
+    mutate("tick", { id, ticked }, () => {
+      items = items.map((i) => i.id === id ? { ...i, ticked, ticked_at: ticked ? new Date().toISOString() : null } : i);
+    });
+  }
+
+  // − / + taps update the screen straight away but only save once you stop
+  // tapping, so a burst of taps can't reach the server out of order.
+  function changeQty(item, direction) {
+    const qty = Math.round((Number(item.qty) + direction * stepFor(item.unit)) * 100) / 100;
+    if (qty <= 0 || qty > 99999) return;
+    epoch++;
+    items = items.map((i) => i.id === item.id ? { ...i, qty } : i);
+    render();
+    clearTimeout(qtyTimers.get(item.id));
+    qtyTimers.set(item.id, setTimeout(() => saveQty(item.id), 600));
+  }
+  function saveQty(id) {
+    clearTimeout(qtyTimers.get(id));
+    qtyTimers.delete(id);
+    const item = items.find((i) => i.id === id);
+    if (item) mutate("qty", { id, qty: Number(item.qty) });
+  }
+  function flushQty() { [...qtyTimers.keys()].forEach(saveQty); }
+
+  $("addForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const input = $("addInput");
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = "";
+    flushQty();
+    $("addForm").classList.add("busy");
+    const data = await mutate("add", { text, by: myName });
+    $("addForm").classList.remove("busy");
+    if (!data) {
+      if (!input.value) input.value = text; // keep what was typed so it isn't lost
+    } else if (data.updated?.length) {
+      toast("➕ Topped up: " + data.updated.join(", "));
+    }
+  });
+
+  // Two taps to clear, so a stray thumb in the supermarket doesn't wipe the trolley.
+  let clearArmed = null;
+  $("clearBtn").addEventListener("click", async () => {
+    const btn = $("clearBtn");
+    if (!clearArmed) {
+      btn.classList.add("confirm");
+      btn.textContent = "Tap to confirm";
+      clearArmed = setTimeout(disarmClear, 3000);
+      return;
+    }
+    disarmClear();
+    const data = await mutate("clear", {}, () => { items = items.filter((i) => !i.ticked); });
+    if (data) toast(`🧹 Cleared ${data.cleared} item${data.cleared === 1 ? "" : "s"}`);
+  });
+  function disarmClear() {
+    clearTimeout(clearArmed);
+    clearArmed = null;
+    $("clearBtn").classList.remove("confirm");
+    $("clearBtn").textContent = "Clear ticked";
+  }
+
+  /* ---------- Dinners ---------- */
+
+  let meals = [];
+  let mealsLoaded = false;
+  let mealView = store.get("kitchen.mealView") === "list" ? "list" : "cards";
+  let draft = null;        // the dinner being added or edited
+  let draftDirty = false;
+
+  const PLATE = "🍲";
+  const LINK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg>';
+  const JAR_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="3.5" rx="1"/><path d="M8 6c-1.8 1-3 2.7-3 4.6v7.9A2.5 2.5 0 0 0 7.5 21h9a2.5 2.5 0 0 0 2.5-2.5v-7.9C19 8.7 17.8 7 16 6"/><path d="M8.5 13.5h7"/></svg>';
+  const X_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+  // Only ever put http(s) links into the page.
+  function safeUrl(u) {
+    try {
+      const url = new URL(u);
+      return /^https?:$/.test(url.protocol) ? url.href : null;
+    } catch { return null; }
+  }
+
+  // "4" → "Serves 4", "4 - 5 people" → "Serves 4 - 5 people", "4 servings" stays as it is
+  const servingsText = (s) => /^\d/.test(s) && !/serv|make|portion/i.test(s) ? `Serves ${s}` : s;
+
+  function photoEl(url) {
+    const box = document.createElement("span");
+    box.className = "meal-photo";
+    const src = url && safeUrl(url);
+    if (src) {
+      const img = document.createElement("img");
+      img.alt = "";
+      img.loading = "lazy";
+      img.referrerPolicy = "no-referrer";
+      img.addEventListener("error", () => { img.remove(); box.textContent = PLATE; });
+      img.src = src;
+      box.append(img);
+    } else {
+      box.textContent = PLATE;
+    }
+    return box;
+  }
+
+  function mealEl(meal) {
+    const li = document.createElement("li");
+    li.className = "meal glass";
+
+    const main = document.createElement("button");
+    main.type = "button";
+    main.className = "meal-main";
+    main.dataset.id = meal.id;
+    const body = document.createElement("span");
+    body.className = "meal-body";
+    const name = document.createElement("span");
+    name.className = "meal-name";
+    name.textContent = meal.name;
+    const meta = document.createElement("span");
+    meta.className = "meal-meta";
+    const count = meal.ingredients.length;
+    const staples = meal.ingredients.filter((i) => i.staple).length;
+    meta.textContent = [
+      meal.servings && servingsText(meal.servings),
+      `${count} ingredient${count === 1 ? "" : "s"}`,
+      staples && `${staples} pantry staple${staples === 1 ? "" : "s"}`,
+    ].filter(Boolean).join(" · ");
+    body.append(name, meta);
+    main.append(photoEl(meal.image_url), body);
+    li.append(main);
+
+    const href = meal.recipe_url && safeUrl(meal.recipe_url);
+    if (href) {
+      const foot = document.createElement("div");
+      foot.className = "meal-foot";
+      const a = document.createElement("a");
+      a.className = "recipe-link";
+      a.href = href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.innerHTML = "View recipe " + LINK_SVG;
+      foot.append(a);
+      li.append(foot);
+    }
+    return li;
+  }
+
+  // Compact A–Z row: name, ingredient count, and a recipe link if there is one.
+  function mealRowEl(meal) {
+    const li = document.createElement("li");
+    li.className = "meal-row";
+
+    const main = document.createElement("button");
+    main.type = "button";
+    main.className = "meal-row-main";
+    main.dataset.id = meal.id;
+    const name = document.createElement("span");
+    name.className = "meal-row-name";
+    name.textContent = meal.name;
+    const count = document.createElement("span");
+    const n = meal.ingredients.length;
+    count.className = "meal-row-count" + (n ? "" : " missing");
+    if (n) count.innerHTML = `<span class="mono">${n}</span> ingredient${n === 1 ? "" : "s"}`;
+    else count.textContent = "No ingredients";
+    main.append(name, count);
+    li.append(main);
+
+    const href = meal.recipe_url && safeUrl(meal.recipe_url);
+    if (href) {
+      const a = document.createElement("a");
+      a.className = "meal-row-link";
+      a.href = href;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.innerHTML = LINK_SVG;
+      a.setAttribute("aria-label", `Open the recipe for ${meal.name}`);
+      li.append(a);
+    } else {
+      const spacer = document.createElement("span");
+      spacer.className = "meal-row-spacer";
+      li.append(spacer);
+    }
+    return li;
+  }
+
+  function mealListEls() {
+    const els = [];
+    let letter = null;
+    for (const meal of meals) {
+      const first = meal.name.trim().charAt(0).toUpperCase();
+      const heading = /[A-Z]/.test(first) ? first : "#";
+      if (heading !== letter) {
+        letter = heading;
+        const h = document.createElement("li");
+        h.className = "meal-letter";
+        h.setAttribute("aria-hidden", "true");
+        h.textContent = heading;
+        els.push(h);
+      }
+      els.push(mealRowEl(meal));
+    }
+    return els;
+  }
+
+  function renderMeals() {
+    document.querySelectorAll(".view-toggle button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.view === mealView)));
+    $("meals").classList.toggle("compact", mealView === "list");
+    $("meals").replaceChildren(...(mealView === "list" ? mealListEls() : meals.map(mealEl)));
+    $("mealCount").textContent = meals.length;
+    $("mealLabel").textContent = meals.length === 1 ? "dinner" : "dinners";
+    $("mealsEmpty").hidden = !mealsLoaded || meals.length > 0;
+  }
+
+  function applyMeals(data) {
+    meals = data.meals;
+    mealsLoaded = true;
+    renderMeals();
+    setSync("ok");
+  }
+
+  async function loadMeals() {
+    if (!passcode) return;
+    try {
+      applyMeals(await api("meals"));
+    } catch (err) {
+      handleError(err, mealsLoaded);
+    }
+  }
+
+  document.querySelectorAll(".view-toggle button").forEach((b) => b.addEventListener("click", () => {
+    mealView = b.dataset.view;
+    store.set("kitchen.mealView", mealView);
+    renderMeals();
+  }));
+
+  $("meals").addEventListener("click", (e) => {
+    const btn = e.target.closest(".meal-main, .meal-row-main");
+    if (btn) openEditor(meals.find((m) => m.id === Number(btn.dataset.id)));
+  });
+  $("newMealBtn").addEventListener("click", () => openEditor(null));
+
+  /* ---------- Meal editor ---------- */
+
+  function openEditor(meal) {
+    draft = {
+      id: meal?.id ?? null,
+      image_url: null,
+      // touched: someone tapped the jar on this row, so saving updates the household staples list
+      ingredients: (meal?.ingredients ?? []).map((i) => ({ line: i.line, name: i.name, staple: i.staple, touched: false })),
+    };
+    draftDirty = false;
+    $("editorTitle").textContent = meal ? "Edit dinner" : "New dinner";
+    $("mealUrl").value = meal?.recipe_url ?? "";
+    $("mealName").value = meal?.name ?? "";
+    $("mealServings").value = meal?.servings ?? "";
+    $("editorError").textContent = "";
+    $("pasteBox").hidden = true;
+    $("pasteText").value = "";
+    $("deleteMeal").hidden = !meal;
+    setFetchStatus("");
+    disarmDelete();
+    setPhoto(meal?.image_url);
+    $("editor").hidden = false;
+    $("editor").scrollTop = 0;
+    document.body.classList.add("sheet-open");
+    renderIngredients();
+  }
+
+  function closeEditor() {
+    $("editor").hidden = true;
+    document.body.classList.remove("sheet-open");
+    draft = null;
+  }
+
+  $("editorCancel").addEventListener("click", () => {
+    if (!draftDirty || confirm("Discard your changes to this dinner?")) closeEditor();
+  });
+  $("mealForm").addEventListener("input", () => { draftDirty = true; });
+
+  function setFetchStatus(message, tone = "") {
+    const el = $("fetchStatus");
+    el.textContent = message;
+    el.className = "hint" + (tone ? " " + tone : "");
+  }
+
+  function setPhoto(url) {
+    const src = url && safeUrl(url);
+    if (draft) draft.image_url = src || null;
+    $("mealPhoto").hidden = !src;
+    if (src) $("mealPhotoImg").src = src;
+    else $("mealPhotoImg").removeAttribute("src");
+  }
+  $("mealPhotoImg").addEventListener("error", () => { if (draft) setPhoto(null); });
+  $("photoRemove").addEventListener("click", () => { setPhoto(null); draftDirty = true; });
+
+  function autoGrow(ta) {
+    ta.style.height = "auto";
+    ta.style.height = ta.scrollHeight + 2 + "px";
+  }
+
+  function renderIngredients() {
+    $("ingList").replaceChildren(...draft.ingredients.map((ing, idx) => {
+      const li = document.createElement("li");
+      li.className = "ing";
+      li.dataset.idx = idx;
+      li.dataset.staple = String(ing.staple);
+
+      const ta = document.createElement("textarea");
+      ta.className = "ing-text";
+      ta.rows = 1;
+      ta.maxLength = 300;
+      ta.value = ing.line;
+      ta.placeholder = "e.g. 2 red onions, chopped";
+      ta.setAttribute("aria-label", `Ingredient ${idx + 1}`);
+
+      const jar = document.createElement("button");
+      jar.type = "button";
+      jar.className = "ing-staple";
+      jar.innerHTML = JAR_SVG;
+      jar.title = "Always have";
+      jar.setAttribute("aria-label", "Always have");
+      jar.setAttribute("aria-pressed", String(ing.staple));
+
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "ing-del";
+      del.innerHTML = X_SVG;
+      del.setAttribute("aria-label", "Remove ingredient");
+
+      li.append(ta, jar, del);
+      return li;
+    }));
+    updateIngCount();
+    requestAnimationFrame(() => document.querySelectorAll(".ing-text").forEach(autoGrow));
+  }
+
+  function updateIngCount() {
+    const n = draft.ingredients.filter((i) => i.line.trim()).length;
+    $("ingCount").textContent = n || "";
+  }
+
+  function updateStapleButtons() {
+    document.querySelectorAll("#ingList .ing").forEach((li) => {
+      const ing = draft.ingredients[Number(li.dataset.idx)];
+      if (!ing) return;
+      li.dataset.staple = String(ing.staple);
+      li.querySelector(".ing-staple").setAttribute("aria-pressed", String(ing.staple));
+    });
+  }
+
+  // Asks the server whether new or edited lines are already household staples.
+  async function checkStaples(indices) {
+    const rows = indices.map((i) => draft.ingredients[i]).filter((r) => r && r.line.trim() && !r.touched);
+    if (!rows.length) return;
+    const d = draft;
+    try {
+      const { ingredients } = await api("preview", { lines: rows.map((r) => r.line) });
+      if (d !== draft) return;
+      rows.forEach((r, k) => {
+        if (ingredients[k]?.line !== r.line.replace(/\s+/g, " ").trim()) return; // edited again meanwhile
+        r.name = ingredients[k].name;
+        if (r.touched) return;
+        // A jar tapped on this recipe but not saved yet wins over the saved household list.
+        const same = draft.ingredients.find((o) => o !== r && o.touched && o.name === r.name);
+        r.staple = same ? same.staple : ingredients[k].staple;
+        if (same) r.touched = true;
+      });
+      updateStapleButtons();
+    } catch {
+      // Not important: the jar marks get sorted out when the dinner is saved.
+    }
+  }
+
+  function addIngredientRow(afterIdx) {
+    const at = afterIdx === undefined ? draft.ingredients.length : afterIdx + 1;
+    draft.ingredients.splice(at, 0, { line: "", staple: false, touched: false });
+    renderIngredients();
+    const ta = document.querySelector(`#ingList .ing[data-idx="${at}"] .ing-text`);
+    if (ta) ta.focus();
+  }
+
+  $("ingList").addEventListener("input", (e) => {
+    if (!e.target.classList.contains("ing-text")) return;
+    const ing = draft.ingredients[Number(e.target.closest(".ing").dataset.idx)];
+    ing.line = e.target.value.replace(/\n/g, " ");
+    ing.name = null; // worked out again by checkStaples when the row is left
+    autoGrow(e.target);
+    updateIngCount();
+  });
+  $("ingList").addEventListener("change", (e) => {
+    if (e.target.classList.contains("ing-text")) checkStaples([Number(e.target.closest(".ing").dataset.idx)]);
+  });
+  $("ingList").addEventListener("keydown", (e) => {
+    // Enter starts a new ingredient instead of a new line.
+    if (e.key === "Enter" && e.target.classList.contains("ing-text")) {
+      e.preventDefault();
+      addIngredientRow(Number(e.target.closest(".ing").dataset.idx));
+    }
+  });
+  $("ingList").addEventListener("click", (e) => {
+    const li = e.target.closest(".ing");
+    if (!li) return;
+    const idx = Number(li.dataset.idx);
+    if (e.target.closest(".ing-staple")) {
+      // Staples are household-wide, so every line of the same ingredient follows along.
+      const ing = draft.ingredients[idx];
+      const staple = !ing.staple;
+      for (const other of draft.ingredients) {
+        if (other === ing || (ing.name && other.name === ing.name)) {
+          other.staple = staple;
+          other.touched = true;
+        }
+      }
+      draftDirty = true;
+      updateStapleButtons();
+    } else if (e.target.closest(".ing-del")) {
+      draft.ingredients.splice(idx, 1);
+      draftDirty = true;
+      renderIngredients();
+    }
+  });
+  $("ingAdd").addEventListener("click", () => addIngredientRow());
+
+  function openPaste() {
+    $("pasteBox").hidden = false;
+    $("pasteToggle").textContent = "Hide";
+  }
+  $("pasteToggle").addEventListener("click", () => {
+    const show = $("pasteBox").hidden;
+    $("pasteBox").hidden = !show;
+    $("pasteToggle").textContent = show ? "Hide" : "Paste a list";
+    if (show) $("pasteText").focus();
+  });
+  $("pasteAdd").addEventListener("click", () => {
+    const lines = $("pasteText").value.split(/\n/)
+      .map((l) => l.replace(/^\s*(?:[-•*▢☐□]|\d+[.)])\s+/, "").replace(/\s+/g, " ").trim())
+      .filter(Boolean);
+    if (!lines.length) return;
+    draft.ingredients = draft.ingredients.filter((i) => i.line.trim());
+    const start = draft.ingredients.length;
+    draft.ingredients.push(...lines.map((line) => ({ line, staple: false, touched: false })));
+    draftDirty = true;
+    renderIngredients();
+    checkStaples(lines.map((_, k) => start + k));
+    $("pasteText").value = "";
+    $("pasteBox").hidden = true;
+    $("pasteToggle").textContent = "Paste a list";
+  });
+
+  async function fetchRecipe() {
+    const url = $("mealUrl").value.trim();
+    if (!url) {
+      setFetchStatus("Paste a recipe link first.", "warn");
+      return;
+    }
+    const btn = $("fetchBtn");
+    btn.disabled = true;
+    btn.textContent = "…";
+    setFetchStatus("Reading the recipe…");
+    const d = draft;
+    try {
+      const r = await api("import", { url });
+      if (d !== draft) return;
+      draftDirty = true;
+      $("mealUrl").value = r.recipe_url || url;
+      if (r.name && !$("mealName").value.trim()) $("mealName").value = r.name;
+      if (r.servings && !$("mealServings").value.trim()) $("mealServings").value = r.servings;
+      if (r.image_url && !draft.image_url) setPhoto(r.image_url);
+      if (r.found) {
+        const hasOwn = draft.ingredients.some((i) => i.line.trim());
+        if (!hasOwn || confirm("Replace the ingredients already here with the recipe's?")) {
+          draft.ingredients = r.ingredients.map((i) => ({ line: i.line, name: i.name, staple: i.staple, touched: false }));
+          renderIngredients();
+        }
+        const staples = r.ingredients.filter((i) => i.staple).length;
+        setFetchStatus(`Found ${r.ingredients.length} ingredients${staples ? ` (${staples} you always have)` : ""}. Check them over, then save.`, "good");
+      } else {
+        setFetchStatus("Couldn't find recipe details on that page. Type or paste the ingredients below.", "warn");
+        openPaste();
+      }
+    } catch (err) {
+      if (err instanceof AuthError) return handleError(err);
+      if (d !== draft) return;
+      setFetchStatus((err instanceof TypeError ? "No connection." : err.message) + " You can type or paste the ingredients below instead.", "warn");
+      openPaste();
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Fetch";
+    }
+  }
+  $("fetchBtn").addEventListener("click", fetchRecipe);
+  $("mealUrl").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); fetchRecipe(); }
+  });
+
+  $("mealForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = $("mealName").value.trim();
+    if (!name) {
+      $("editorError").textContent = "Give the dinner a name.";
+      $("mealName").focus();
+      return;
+    }
+    const btn = $("saveMeal");
+    btn.disabled = true;
+    btn.textContent = "Saving…";
+    $("editorError").textContent = "";
+    try {
+      const data = await api("save_meal", {
+        id: draft.id,
+        name,
+        recipe_url: $("mealUrl").value.trim(),
+        image_url: draft.image_url,
+        servings: $("mealServings").value.trim(),
+        ingredients: draft.ingredients
+          .filter((i) => i.line.trim())
+          .map((i) => ({ line: i.line, staple: i.touched ? i.staple : null })),
+      });
+      applyMeals(data);
+      closeEditor();
+      toast(`Saved ${name}`);
+    } catch (err) {
+      if (err instanceof AuthError) return handleError(err);
+      $("editorError").textContent = err instanceof TypeError ? "No connection. Check your signal and try again." : err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Save dinner";
+    }
+  });
+
+  // Two taps to delete, like "Clear ticked".
+  let deleteArmed = null;
+  $("deleteMeal").addEventListener("click", async () => {
+    if (!deleteArmed) {
+      $("deleteMeal").classList.add("confirm");
+      $("deleteMeal").textContent = "Tap again to delete";
+      deleteArmed = setTimeout(disarmDelete, 3000);
+      return;
+    }
+    disarmDelete();
+    try {
+      applyMeals(await api("delete_meal", { id: draft.id }));
+      closeEditor();
+      toast("Dinner deleted");
+    } catch (err) {
+      if (err instanceof AuthError) return handleError(err);
+      $("editorError").textContent = err instanceof TypeError ? "No connection. Check your signal and try again." : err.message;
+    }
+  });
+  function disarmDelete() {
+    clearTimeout(deleteArmed);
+    deleteArmed = null;
+    $("deleteMeal").classList.remove("confirm");
+    $("deleteMeal").textContent = "Delete dinner";
+  }
+
+  /* ---------- Tabs ---------- */
+
+  const TITLES = { list: "Shopping list", week: "This week", dinners: "Dinners" };
+  let currentTab = "list";
+  function showTab(name) {
+    if (!TITLES[name]) name = "list";
+    currentTab = name;
+    document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.tab === name)));
+    for (const tab of Object.keys(TITLES)) $("view-" + tab).hidden = tab !== name;
+    $("title").textContent = TITLES[name];
+    store.set("kitchen.tab", name);
+    if (name === "dinners") loadMeals();
+  }
+  document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => showTab(t.dataset.tab)));
+
+  /* ---------- Passcode ---------- */
+
+  function showLock(message = "") {
+    stopPolling();
+    passcode = null;
+    store.remove("kitchen.passcode");
+    $("lockError").textContent = message;
+    $("nameInput").value = myName;
+    $("lock").hidden = false;
+    $("passInput").value = "";
+    setTimeout(() => $("passInput").focus(), 50);
+  }
+
+  $("lockForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const code = $("passInput").value.trim();
+    if (!code) return;
+    const btn = $("unlockBtn");
+    btn.disabled = true;
+    btn.textContent = "Checking…";
+    $("lockError").textContent = "";
+    try {
+      const data = await api("list", {}, code);
+      passcode = code;
+      myName = $("nameInput").value.trim();
+      store.set("kitchen.passcode", code);
+      store.set("kitchen.name", myName);
+      $("lock").hidden = true;
+      items = data.items;
+      render();
+      setSync("ok");
+      startPolling();
+      if (currentTab === "dinners") loadMeals();
+    } catch (err) {
+      $("lockError").textContent = err instanceof AuthError
+        ? "That passcode didn't work. Try again."
+        : "Couldn't reach the server. Check your signal and try again.";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Unlock";
+    }
+  });
+
+  $("lockBtn").addEventListener("click", () => {
+    if (confirm("Lock this phone? You'll need the passcode again.")) showLock();
+  });
+
+  /* ---------- Start ---------- */
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) return flushQty();
+    refresh();
+    if (currentTab === "dinners" && !draft) loadMeals();
+  });
+  window.addEventListener("focus", refresh);
+  window.addEventListener("online", refresh);
+
+  showTab(store.get("kitchen.tab") || "list");
+  if (passcode) startPolling(); else showLock();
 </script>
 </body>
 </html>
